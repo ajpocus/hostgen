@@ -1,6 +1,6 @@
 - Introduction -
 
-Hostgen is a utility for generating /etc/hosts files.
+Hostgen is a utility for automatically generating /etc/hosts files.
 
 - Where to get it -
 
@@ -12,13 +12,13 @@ http://github.com/ajpocus/hostgen
     I built hostgen on Arch Linux i686, kernel 2.6.35, with Perl 5.12.1. As 
 long as you have a recent version of Linux with Perl >= 5.10, you should be 
 fine. It may work with older versions of Perl, but this hasn't been tested.
+Anything earlier than 5.8 is probably a bad idea.
 
 - How it works -
 
     Hostgen is actually two programs: hostgen-srv, and hostgen-cli. Hostgen-srv
-is the central server, creating hostsfile entries from connected clients. The
-client program simply contacts that server, and it's done. The server appends
-the client's hostname and IP to hostgen.out.
+is the central server, creating hostsfile entries from connected clients, with
+no user intervention necessary. The client program simply contacts that server, and it's done. The server appends the client's hostname and IP to hostgen.out.
 
 - Usage -
 
@@ -30,13 +30,14 @@ the client's hostname and IP to hostgen.out.
 
 ./hostgen-cli -s <server IP>
 
+    The server will write the hosts file to ./hostgen.out.
+
 - Caveats -
 
-    Hostgen does not directly write the /etc/hosts file. This allows
-hostgen to be run as a normal user, but adds a manual step. It also doesn't
-check for existing entries, or do anything about duplicate entries. This will
-create problems if a user wishes to update their entry; until then, hostgen
-isn't as robust as it could be.
+    Hostgen does not directly write the /etc/hosts file. This allows hostgen to be run as a normal user, but adds a manual copying step. It also doesn't check 
+for existing entries, or do anything about duplicate entries. This will create 
+problems if a user wishes to update their entry; until then, hostgen isn't as 
+robust as it could be.
 
 - Authors -
 
