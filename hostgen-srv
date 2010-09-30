@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+
+# hostgen-srv: Generates a host file from the IPs and hostnames of clients.
+# Revision 1.0
+#
+# Copyright (c) 2010, Austin Pocus
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without 
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this 
+#   list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright notice, 
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# * Neither the name of Austin Pocus nor the names of its contributors may be 
+#   used to endorse or promote products derived from this software without 
+#   specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+use strict;
+use IO::Socket;
+
+# create the base socket from which session sockets are made
+my $socket = new IO::Socket::INET(
+		    LocalHost => 'localhost',
+		    LocalPort => 12345,
+		    Proto     => 'tcp',
+		    Listen    => SOMAXCONN,
+		    Reuse     => 1);
+$socket or die "socket: $!";
+my ($session_sock, $client_addr);
+while ( ($session_sock, $client_addr) = $socket->accept() ) {
+    # get the necessary info
+    my ($client_port, $client_ip) = sockaddr_in($client_addr)
+	or die "sockaddr_in: $!";
+    my $client_host = gethostbyaddr($client_ip, AF_INET)
+	or die "gethostbyaddr: $!";
+    $client_ip = inet_ntoa($client_ip)
+	or die "inet_ntoa: $!";
+
+    # show the client its information before writing
+    print $session_sock "Your IP: $client_ip\n";
+    print $session_sock "Your hostname: $client_host\n";
+
+    # get separate host and domain, then open and write hosts file
+    my ($host, $domain) = split(/\./, $client_host);
+    my $file = 'hostgen.out';
+    open FILE, ">>$file" or die "open: $!";
+
+    printf(FILE "%s\t\t%s.%s\t%s\n",
+	    $client_ip, $host, $domain, $host);
+
+    print "Added $client_host to hosts file.\n";
+    close FILE;
+    close $session_sock;
+}
+
