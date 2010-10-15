@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 
 # hostgen-srv: Generates a host file from the IPs and hostnames of clients.
-# Revision 1.0
-#
+
 # Copyright (c) 2010, Austin Pocus
 # All rights reserved.
 #
@@ -30,12 +29,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use strict;
+use Getopt::Std;
 use IO::Socket;
+use Net::Ping;
+
+our %opts;
+getopt('p', \%opts);
+my $port = $opts{'p'} || 12345;
 
 # create the base socket from which session sockets are made
 my $socket = new IO::Socket::INET(
 		    LocalHost => 'localhost',
-		    LocalPort => 12345,
+		    LocalPort => $port,
 		    Proto     => 'tcp',
 		    Listen    => SOMAXCONN,
 		    Reuse     => 1);
@@ -62,7 +67,7 @@ while ( ($session_sock, $client_addr) = $socket->accept() ) {
     # see if the client already has an entry
     while (<FILE>) {
 	if (/$client_ip\t\t$host\.$domain\t$host/) {
-	    print "You already have an entry.\n";
+	    print "You already have an up-to-date entry.\n";
 	    close FILE;
 	    close $session_sock;
 	}
