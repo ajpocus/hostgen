@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
 # hostgen-cli: Gives a hostgen server your IP and hostname for /etc/hosts
-# Revision 1.0
 #
 # Copyright (c) 2010, Austin Pocus
 # All rights reserved.

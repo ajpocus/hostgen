@@ -1,45 +1,57 @@
-- Introduction -
+- INTRODUCTION -
 
-Hostgen is a utility for automatically generating /etc/hosts files.
+    This is the README for hostgen, a utility for automatically generating 
+/etc/hosts files.
 
-- Where to get it -
+- WHERE TO FIND IT -
 
-Hostgen can be found on github, at this address:
+    Hostgen can be found on github, at this address:
+
 http://github.com/ajpocus/hostgen
 
-- What you need -
+-- SYSTEM REQUIREMENTS --
 
-    I built hostgen on Arch Linux i686, kernel 2.6.35, with Perl 5.12.1. As 
-long as you have a recent version of Linux with Perl >= 5.10, you should be 
-fine. It may work with older versions of Perl, but this hasn't been tested.
-Anything earlier than 5.8 is probably a bad idea.
+    Hostgen has been written and tested with Perl 5.12.1. Any version of Perl 
+after 5.8 should be fine for hostgen. Older versions might be okay, but I'm
+not sure. I'd like to know, if you try it.
 
-- How it works -
-
-    Hostgen is actually two programs: hostgen-srv, and hostgen-cli. Hostgen-srv
-is the central server, creating hostsfile entries from connected clients, with
-no user intervention necessary. The client program simply contacts that server, and it's done. The server appends the client's hostname and IP to hostgen.out.
-
-- Usage -
+-- USAGE --
 
     On the server, in the directory where hostgen-srv is saved, run:
 
 ./hostgen-srv &
 
-    Then on each client, run:
+    On each client, run:
 
 ./hostgen-cli -s <server IP>
 
     The server will write the hosts file to ./hostgen.out.
 
-- Caveats -
+-- HOW IT WORKS --
 
-    Hostgen does not directly write the /etc/hosts file. This allows hostgen to be run as a normal user, but adds a manual copying step. It also doesn't check 
-for existing entries, or do anything about duplicate entries. This will create 
-problems if a user wishes to update their entry; until then, hostgen isn't as 
-robust as it could be.
+    Hostgen is fairly simple. The server listens in the background on port
+12345. The client only has to know the IP of the hostgen server, and from there
+the server grabs the IP and hostname of each connected client. It writes them 
+in the /etc/hosts format to ./hostgen.out, unless the client already has an
+entry. In this case the client is notified, the connection is ended, and the
+old entry is preserved.
 
-- Authors -
+-- CAVEATS --
 
-    Hostgen was written by Austin Pocus, copyright 2010. It is released under
-the BSD license. More information can be found in LICENSE, or at the top of any source file. 
+*    Hostgen is only practical for small groups of maybe a dozen or two. Every
+  client has to know the IP of the server, and contact it themselves while
+  the server is running. Automation is possible with cron, for example, but 
+  this is not optimal.
+*    Hostgen doesn't write to /etc/hosts. This allows for execution by an
+  unpriveleged user, but adds a manual step.
+*    The duplicate entry handling is lacking. It should be finer-grained and ask
+  about hostname changes.
+*    The hosts file isn't distributed back to the clients. Right now, there's
+  no way to cleanly stop the server; the process must be killed.
+
+-- AUTHOR --
+
+    My name is Austin Pocus, and I wrote hostgen. You can contact me at
+ajpocus@gmail.com. I released hostgen under the BSD license. More information 
+can be found in LICENSE, or at the top of any source file.
+
