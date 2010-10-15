@@ -34,9 +34,10 @@ use Getopt::Std;
 
 our %opts;
 getopt('s', \%opts);
+getopt('p', \%opts);
 
 my $server = $opts{'s'} || 'localhost';
-my $port = 12345;
+my $port = $opts{'p'} || 12345;
 
 my $socket = new IO::Socket::INET(
 		    PeerAddr => $server,
