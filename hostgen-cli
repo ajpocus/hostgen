@@ -33,8 +33,7 @@ use IO::Socket;
 use Getopt::Std;
 
 our %opts;
-getopt('s', \%opts);
-getopt('p', \%opts);
+getopt('sp', \%opts);
 
 my $server = $opts{'s'} || 'localhost';
 my $port = $opts{'p'} || 12345;

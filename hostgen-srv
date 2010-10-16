@@ -34,7 +34,19 @@ use IO::Socket;
 use Net::Ping;
 
 our %opts;
-getopt('p', \%opts);
+getopt('op', \%opts);
+
+# make sure the port is valid
+if ($opts{'p'}) {
+    if ($opts{'p'} =~ /\b\d*\b/) {
+	die "You specified a port that wasn't a number.";
+    }
+    if (0 <= $opts{'p'} <= 65535)) {
+	die "Your port is outside of the legal range.";
+    }
+}
+
+my $file = $opts{'o'} || "hostgen.out";
 my $port = $opts{'p'} || 12345;
 
 # create the base socket from which session sockets are made
@@ -61,7 +73,6 @@ while ( ($session_sock, $client_addr) = $socket->accept() ) {
 
     # get separate host and domain, then open and write hosts file
     my ($host, $domain) = split(/\./, $client_host);
-    my $file = 'hostgen.out';
     open FILE, ">>$file" or die "open: $!";
 
     # see if the client already has an entry

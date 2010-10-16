@@ -1,9 +1,9 @@
-- INTRODUCTION -
+-- INTRODUCTION --
 
     This is the README for hostgen, a utility for automatically generating 
 /etc/hosts files.
 
-- WHERE TO FIND IT -
+-- WHERE TO FIND IT --
 
     Hostgen can be found on github, at this address:
 
@@ -19,34 +19,35 @@ not sure. I'd like to know, if you try it.
 
     On the server, in the directory where hostgen-srv is saved, run:
 
-./hostgen-srv &
+./hostgen-srv [-o filename] [-p port] &
 
     On each client, run:
 
-./hostgen-cli -s <server IP>
+./hostgen-cli -s {server IP} [-o filename] [-p port]
 
-    The server will write the hosts file to ./hostgen.out.
+    The server will write the hosts file to ./hostgen.out. You can specify a
+different output file by using "-o". The default port is 12345, but
+you can change that with "-p".
 
 -- HOW IT WORKS --
 
-    Hostgen is fairly simple. The server listens in the background on port
-12345. The client only has to know the IP of the hostgen server, and from there
-the server grabs the IP and hostname of each connected client. It writes them 
-in the /etc/hosts format to ./hostgen.out, unless the client already has an
-entry. In this case the client is notified, the connection is ended, and the
-old entry is preserved.
+    Hostgen is fairly simple. The client only has to know the IP of the hostgen
+server, and from there the server grabs the IP and hostname of each connected
+client. It writes them in the /etc/hosts format to ./hostgen.out, unless the
+client already has an entry. In this case the client is notified, the
+connection is ended, and the old entry is preserved.
 
 -- CAVEATS --
 
-*    Hostgen is only practical for small groups of maybe a dozen or two. Every
+  * Hostgen is only practical for small groups of maybe a dozen or two. Every
   client has to know the IP of the server, and contact it themselves while
   the server is running. Automation is possible with cron, for example, but 
   this is not optimal.
-*    Hostgen doesn't write to /etc/hosts. This allows for execution by an
+  * Hostgen doesn't write to /etc/hosts. This allows for execution by an
   unpriveleged user, but adds a manual step.
-*    The duplicate entry handling is lacking. It should be finer-grained and ask
-  about hostname changes.
-*    The hosts file isn't distributed back to the clients. Right now, there's
+  * The duplicate entry handling is lacking. It should be finer-grained and 
+  ask about hostname changes.
+  * The hosts file isn't distributed back to the clients. Right now, there's
   no way to cleanly stop the server; the process must be killed.
 
 -- AUTHOR --
